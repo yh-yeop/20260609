@@ -420,11 +420,6 @@ else:
 
     st.info("블록을 선택하세요")
 
-row = st.selectbox("Row", range(10))
-col = st.selectbox("Col", range(10))
-
-ui.render_board(row, col)
-
 # -----------------------
 # Place Button
 # -----------------------
