@@ -256,31 +256,43 @@ class StreamlitUI:
     def __init__(self, game):
         self.game = game
 
-    def get_shadow_cells(self, block, row, col):
+    def get_shadow_map(self, block, row, col):
 
-        cells = []
+        shadow_map = {}
 
         h, w = block.shape.shape
 
         for i in range(h):
             for j in range(w):
 
-                if block.shape[i, j] == 1:
-                    cells.append((row + i, col + j))
+                if block.shape[i, j] == 0:
+                    continue
 
-        return set(cells)
+                x = row + i
+                y = col + j
+
+                # 보드 밖
+                if (
+                    x >= self.game.board.size
+                    or y >= self.game.board.size
+                ):
+                    shadow_map[(x, y)] = "bad"
+
+                # 기존 블록과 충돌
+                elif self.game.board.grid[x, y] == 1:
+                    shadow_map[(x, y)] = "overlap"
+
+                # 정상 배치
+                else:
+                    shadow_map[(x, y)] = "ok"
+
+        return shadow_map
 
     def render_board(self, row, col):
 
         block = self.game.blocks[self.game.selected]
 
-        valid = self.game.board.can_place(
-            block,
-            row,
-            col
-        )
-
-        shadow_cells = self.get_shadow_cells(
+        shadow_map = self.get_shadow_map(
             block,
             row,
             col
@@ -293,15 +305,38 @@ class StreamlitUI:
             grid-template-columns:repeat(10,26px);
             gap:2px;
         }
+
         .cell{
             width:26px;
             height:26px;
             border-radius:4px;
         }
-        .empty{background:#2b2b2b;}
-        .filled{background:#4fc3f7;}
-        .shadow_ok{background:#ff6b6b;opacity:.4;}
-        .shadow_bad{background:#b00020;opacity:.4;}
+
+        .empty{
+            background:#2b2b2b;
+        }
+
+        .filled{
+            background:#4fc3f7;
+        }
+
+        /* 정상 배치 가능 */
+        .shadow_ok{
+            background:#66bb6a;
+            opacity:.7;
+        }
+
+        /* 기존 블록과 충돌 */
+        .shadow_overlap{
+            background:#ffa726;
+            opacity:.9;
+        }
+
+        /* 보드 밖 또는 불가능 */
+        .shadow_bad{
+            background:#e53935;
+            opacity:.9;
+        }
         </style>
 
         <div class="board">
@@ -310,14 +345,28 @@ class StreamlitUI:
         for r in range(10):
             for c in range(10):
 
-                if self.game.board.grid[r, c] == 1:
-                    cls = "filled"
+                occupied = self.game.board.grid[r, c] == 1
 
-                elif (r, c) in shadow_cells:
-                    cls = "shadow_ok" if valid else "shadow_bad"
+                if (r, c) in shadow_map:
+
+                    state = shadow_map[(r, c)]
+
+                    if state == "ok":
+                        cls = "shadow_ok"
+
+                    elif state == "overlap":
+                        cls = "shadow_overlap"
+
+                    else:
+                        cls = "shadow_bad"
 
                 else:
-                    cls = "empty"
+
+                    cls = (
+                        "filled"
+                        if occupied
+                        else "empty"
+                    )
 
                 html += f'<div class="cell {cls}"></div>'
 
