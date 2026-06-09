@@ -392,7 +392,7 @@ ui = StreamlitUI(game)
 # -----------------------
 # Header
 # -----------------------
-st.title("🧩 Block Blast OOP Edition")
+st.title("🧩 Block Blast")
 st.write(f"⭐ Score : {game.score}")
 
 # -----------------------
@@ -404,7 +404,7 @@ for i in range(3):
 
     with cols[i]:
 
-        st.write(f"Block {i}")
+        st.write(f"블록 {i}")
 
         if game.blocks[i] is None:
 
@@ -419,7 +419,7 @@ for i in range(3):
 
         if game.blocks[i] is not None:
 
-            if st.button(f"Select {i}"):
+            if st.button(f"선택 {i}"):
 
                 game.selected = i
 
@@ -431,7 +431,7 @@ for i in range(3):
 # -----------------------
 # Placement
 # -----------------------
-st.subheader("🎯 Placement Preview")
+st.subheader("🎯 배치")
 
 selected_block = game.blocks[game.selected]
 
@@ -452,13 +452,13 @@ if selected_block is not None:
     )
 
     row = st.selectbox(
-        "Row",
+        "세로",
         row_options,
         key="preview_row"
     )
 
     col = st.selectbox(
-        "Col",
+        "가로",
         col_options,
         key="preview_col"
     )
@@ -474,12 +474,12 @@ else:
 # -----------------------
 if selected_block is not None:
 
-    if st.button("🟢 PLACE BLOCK"):
+    if st.button("🟢 배치"):
 
         if game.place_block(row, col):
             st.rerun()
         else:
-            st.warning("❌ Cannot place block here")
+            st.warning("❌ 그 곳에는 설치할 수 없습니다!")
 
 # -----------------------
 # Game Over
