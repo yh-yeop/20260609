@@ -160,11 +160,11 @@ class Board:
 
         if len(rows):
             self.grid[rows, :] = 0
-            score += len(rows) * 10
+            score += len(rows) * 100
 
         if len(cols):
             self.grid[:, cols] = 0
-            score += len(cols) * 10
+            score += len(cols) * 100
 
         return score
 
